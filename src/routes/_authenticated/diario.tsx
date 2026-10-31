@@ -50,7 +50,7 @@ function Diary() {
 
   const remove = async (id: string) => {
     const { error } = await supabase.from("food_logs").delete().eq("id", id);
-    if (error) return toast.error("Não foi possível remover.");
+    if (error) { toast.error("Não foi possível remover."); return; }
     toast.success("Item removido");
     qc.invalidateQueries({ queryKey: ["logs"] });
   };
@@ -143,7 +143,7 @@ function EditDialog({ log, onClose }: { log: Log | null; onClose: () => void }) 
   const save = async () => {
     if (!log) return;
     const q = Number(qty || log.quantity_g);
-    if (!(q > 0)) return toast.error("Quantidade inválida");
+    if (!(q > 0)) { toast.error("Quantidade inválida"); return; }
     const f = q / Number(log.quantity_g);
     setSaving(true);
     const { error } = await supabase.from("food_logs").update({
@@ -155,7 +155,7 @@ function EditDialog({ log, onClose }: { log: Log | null; onClose: () => void }) 
       meal: meal || log.meal,
     }).eq("id", log.id);
     setSaving(false);
-    if (error) return toast.error("Não foi possível salvar.");
+    if (error) { toast.error("Não foi possível salvar."); return; }
     toast.success("Item atualizado");
     qc.invalidateQueries({ queryKey: ["logs"] });
     onClose();
@@ -169,7 +169,7 @@ function EditDialog({ log, onClose }: { log: Log | null; onClose: () => void }) 
           <label className="block text-sm font-medium">Quantidade (g)
             <Input className="mt-1.5" inputMode="decimal" defaultValue={log ? String(Math.round(Number(log.quantity_g))) : ""} onChange={(e) => setQty(e.target.value.replace(",", "."))} />
           </label>
-          <Select defaultValue={log?.meal} onValueChange={setMeal}>
+          <Select defaultValue={log?.meal ?? "snack"} onValueChange={setMeal}>
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>{MEALS.map((m) => <SelectItem key={m.key} value={m.key}>{m.label}</SelectItem>)}</SelectContent>
           </Select>

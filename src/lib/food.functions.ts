@@ -34,7 +34,7 @@ async function searchOFF(q: string, lang: string): Promise<Food[]> {
       return {
         id: "off-" + p.code,
         name: String(name),
-        brand: p.brands ? String(p.brands).split(",")[0] : null,
+        brand: p.brands ? (String(p.brands).split(",")[0] ?? null) : null,
         image: p.image_front_small_url || p.image_front_url || null,
         kcal: Math.round(kcal),
         protein: num(n.proteins_100g),
@@ -48,7 +48,7 @@ async function searchOFF(q: string, lang: string): Promise<Food[]> {
 }
 
 async function searchUSDA(q: string): Promise<Food[]> {
-  const key = process.env.USDA_API_KEY || "DEMO_KEY";
+  const key = process.env["USDA_API_KEY"] || "DEMO_KEY";
   const url = new URL("https://api.nal.usda.gov/fdc/v1/foods/search");
   url.search = new URLSearchParams({
     api_key: key,

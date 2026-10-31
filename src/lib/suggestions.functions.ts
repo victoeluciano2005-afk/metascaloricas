@@ -22,7 +22,7 @@ async function findImage(keyword: string): Promise<string | null> {
     );
     const data = (await res.json()) as { meals?: { strMealThumb: string }[] | null };
     if (data.meals?.[0]) return data.meals[0].strMealThumb;
-    const first = keyword.split(" ")[0];
+    const first = keyword.split(" ")[0] ?? keyword;
     const r2 = await fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?i=${encodeURIComponent(first)}`, {
       signal: AbortSignal.timeout(5000),
     });
@@ -43,7 +43,7 @@ export const getSuggestions = createServerFn({ method: "POST" })
     }),
   )
   .handler(async ({ data }) => {
-    const key = process.env.LOVABLE_API_KEY;
+    const key = process.env["LOVABLE_API_KEY"];
     if (!key) throw new Error("Serviço de sugestões indisponível.");
     const goal = { lose: "perder peso", maintain: "manter o peso", gain: "ganhar massa" }[data.objective];
     const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
