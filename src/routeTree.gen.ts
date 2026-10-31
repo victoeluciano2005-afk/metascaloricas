@@ -11,8 +11,12 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthenticatedBuscarRouteImport } from './routes/_authenticated/buscar'
 import { Route as AuthenticatedDiarioRouteImport } from './routes/_authenticated/diario'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
+import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated/perfil'
+import { Route as AuthenticatedProgressoRouteImport } from './routes/_authenticated/progresso'
+import { Route as AuthenticatedSugestoesRouteImport } from './routes/_authenticated/sugestoes'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,6 +26,11 @@ const IndexRoute = IndexRouteImport.update({
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedBuscarRoute = AuthenticatedBuscarRouteImport.update({
+  id: '/buscar',
+  path: '/buscar',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedDiarioRoute = AuthenticatedDiarioRouteImport.update({
   id: '/diario',
@@ -33,35 +42,80 @@ const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
   path: '/onboarding',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPerfilRoute = AuthenticatedPerfilRouteImport.update({
+  id: '/perfil',
+  path: '/perfil',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedProgressoRoute = AuthenticatedProgressoRouteImport.update({
+  id: '/progresso',
+  path: '/progresso',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedSugestoesRoute = AuthenticatedSugestoesRouteImport.update({
+  id: '/sugestoes',
+  path: '/sugestoes',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/buscar': typeof AuthenticatedBuscarRoute
   '/diario': typeof AuthenticatedDiarioRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/perfil': typeof AuthenticatedPerfilRoute
+  '/progresso': typeof AuthenticatedProgressoRoute
+  '/sugestoes': typeof AuthenticatedSugestoesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/buscar': typeof AuthenticatedBuscarRoute
   '/diario': typeof AuthenticatedDiarioRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/perfil': typeof AuthenticatedPerfilRoute
+  '/progresso': typeof AuthenticatedProgressoRoute
+  '/sugestoes': typeof AuthenticatedSugestoesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/_authenticated/buscar': typeof AuthenticatedBuscarRoute
   '/_authenticated/diario': typeof AuthenticatedDiarioRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
+  '/_authenticated/perfil': typeof AuthenticatedPerfilRoute
+  '/_authenticated/progresso': typeof AuthenticatedProgressoRoute
+  '/_authenticated/sugestoes': typeof AuthenticatedSugestoesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/diario' | '/onboarding'
+  fullPaths:
+    | '/'
+    | '/buscar'
+    | '/diario'
+    | '/onboarding'
+    | '/perfil'
+    | '/progresso'
+    | '/sugestoes'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/diario' | '/onboarding'
+  to:
+    | '/'
+    | '/buscar'
+    | '/diario'
+    | '/onboarding'
+    | '/perfil'
+    | '/progresso'
+    | '/sugestoes'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/_authenticated/buscar'
     | '/_authenticated/diario'
     | '/_authenticated/onboarding'
+    | '/_authenticated/perfil'
+    | '/_authenticated/progresso'
+    | '/_authenticated/sugestoes'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -85,6 +139,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/buscar': {
+      id: '/_authenticated/buscar'
+      path: '/buscar'
+      fullPath: '/buscar'
+      preLoaderRoute: typeof AuthenticatedBuscarRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/diario': {
       id: '/_authenticated/diario'
       path: '/diario'
@@ -99,17 +160,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/perfil': {
+      id: '/_authenticated/perfil'
+      path: '/perfil'
+      fullPath: '/perfil'
+      preLoaderRoute: typeof AuthenticatedPerfilRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/progresso': {
+      id: '/_authenticated/progresso'
+      path: '/progresso'
+      fullPath: '/progresso'
+      preLoaderRoute: typeof AuthenticatedProgressoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/sugestoes': {
+      id: '/_authenticated/sugestoes'
+      path: '/sugestoes'
+      fullPath: '/sugestoes'
+      preLoaderRoute: typeof AuthenticatedSugestoesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedBuscarRoute: typeof AuthenticatedBuscarRoute
   AuthenticatedDiarioRoute: typeof AuthenticatedDiarioRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
+  AuthenticatedPerfilRoute: typeof AuthenticatedPerfilRoute
+  AuthenticatedProgressoRoute: typeof AuthenticatedProgressoRoute
+  AuthenticatedSugestoesRoute: typeof AuthenticatedSugestoesRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedBuscarRoute: AuthenticatedBuscarRoute,
   AuthenticatedDiarioRoute: AuthenticatedDiarioRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
+  AuthenticatedPerfilRoute: AuthenticatedPerfilRoute,
+  AuthenticatedProgressoRoute: AuthenticatedProgressoRoute,
+  AuthenticatedSugestoesRoute: AuthenticatedSugestoesRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
