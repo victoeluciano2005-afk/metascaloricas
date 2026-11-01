@@ -13,7 +13,7 @@ async function fetchOFF(q: string, lang: string): Promise<any[]> {
   const headers = { "User-Agent": "NutriTrack/1.0 (contato@nutritrack.app)" };
   try {
     const u = new URL("https://search.openfoodfacts.org/search");
-    u.search = new URLSearchParams({ q, page_size: "24", langs: `${lang},en`, fields }).toString();
+    u.search = new URLSearchParams({ q, page_size: "60", langs: `${lang},en`, fields }).toString();
     const r = await fetch(u, { headers, signal: AbortSignal.timeout(9000) });
     if (r.ok) {
       const d = (await r.json()) as { hits?: any[] };
@@ -22,7 +22,7 @@ async function fetchOFF(q: string, lang: string): Promise<any[]> {
   } catch { /* fall through */ }
   const url = new URL("https://world.openfoodfacts.org/cgi/search.pl");
   url.search = new URLSearchParams({
-    search_terms: q, search_simple: "1", action: "process", json: "1", page_size: "20", lc: lang, fields,
+    search_terms: q, search_simple: "1", action: "process", json: "1", page_size: "60", lc: lang, fields,
   }).toString();
   const res = await fetch(url, { headers, signal: AbortSignal.timeout(9000) });
   if (!res.ok) throw new Error("OFF " + res.status);
@@ -83,6 +83,40 @@ async function searchUSDA(q: string): Promise<Food[]> {
   }).filter((f) => f.kcal > 0);
 }
 
+const norm = (s: string) =>
+  s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+// Keep only foods whose name really matches what the user typed; best matches first.
+export function rankByQuery(foods: Food[], q: string): Food[] {
+  const tokens = norm(q).split(/[^a-z0-9]+/).filter(Boolean);
+  const nq = tokens.join(" ");
+  const seen = new Set<string>();
+  return foods
+    .map((f) => {
+      const name = norm(f.name);
+      const words = name.split(/[^a-z0-9]+/).filter(Boolean);
+      if (!tokens.every((t) => words.some((w) => w.startsWith(t)))) return null;
+      let score = 0;
+      if (name === nq) score += 100;
+      if (name.startsWith(nq)) score += 50;
+      if (words[0] === tokens[0]) score += 30;
+      if (tokens.every((t) => words.includes(t))) score += 20;
+      if (f.image) score += 5;
+      score -= words.length;
+      return { f, score };
+    })
+    .filter((x): x is { f: Food; score: number } => x !== null)
+    .sort((a, b) => b.score - a.score)
+    .map((x) => x.f)
+    .filter((f) => {
+      const k = norm(f.name) + "|" + (f.brand ?? "");
+      if (seen.has(k)) return false;
+      seen.add(k);
+      return true;
+    })
+    .slice(0, 30);
+}
+
 export const searchFoods = createServerFn({ method: "GET" })
   .inputValidator(z.object({ q: z.string().trim().min(2).max(80), lang: z.string().max(5).default("pt") }))
   .handler(async ({ data }) => {
@@ -93,5 +127,5 @@ export const searchFoods = createServerFn({ method: "GET" })
       console.error("food search failed", off.reason, usda.reason);
       throw new Error("Não foi possível buscar alimentos agora. Tente novamente.");
     }
-    return { foods: [...a, ...b] };
+    return { foods: rankByQuery([...a, ...b], data.q) };
   });
