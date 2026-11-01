@@ -7,25 +7,31 @@ const num = (v: unknown) => {
   return Number.isFinite(n) ? n : 0;
 };
 
-async function searchOFF(q: string, lang: string): Promise<Food[]> {
+async function fetchOFF(q: string, lang: string): Promise<any[]> {
+  const fields =
+    "code,product_name,product_name_pt,generic_name,brands,image_front_small_url,image_front_url,nutriments,serving_quantity";
+  const headers = { "User-Agent": "NutriTrack/1.0 (contato@nutritrack.app)" };
+  try {
+    const u = new URL("https://search.openfoodfacts.org/search");
+    u.search = new URLSearchParams({ q, page_size: "24", langs: `${lang},en`, fields }).toString();
+    const r = await fetch(u, { headers, signal: AbortSignal.timeout(9000) });
+    if (r.ok) {
+      const d = (await r.json()) as { hits?: any[] };
+      if (d.hits?.length) return d.hits;
+    }
+  } catch { /* fall through */ }
   const url = new URL("https://world.openfoodfacts.org/cgi/search.pl");
   url.search = new URLSearchParams({
-    search_terms: q,
-    search_simple: "1",
-    action: "process",
-    json: "1",
-    page_size: "20",
-    lc: lang,
-    fields:
-      "code,product_name,product_name_pt,generic_name,brands,image_front_small_url,image_front_url,nutriments,serving_quantity",
+    search_terms: q, search_simple: "1", action: "process", json: "1", page_size: "20", lc: lang, fields,
   }).toString();
-  const res = await fetch(url, {
-    headers: { "User-Agent": "NutriTrack/1.0 (contato@nutritrack.app)" },
-    signal: AbortSignal.timeout(9000),
-  });
+  const res = await fetch(url, { headers, signal: AbortSignal.timeout(9000) });
   if (!res.ok) throw new Error("OFF " + res.status);
   const data = (await res.json()) as { products?: any[] };
-  return (data.products ?? [])
+  return data.products ?? [];
+}
+
+async function searchOFF(q: string, lang: string): Promise<Food[]> {
+  return (await fetchOFF(q, lang))
     .map((p): Food | null => {
       const n = p.nutriments ?? {};
       const kcal = num(n["energy-kcal_100g"]) || num(n["energy_100g"]) / 4.184;
@@ -34,7 +40,7 @@ async function searchOFF(q: string, lang: string): Promise<Food[]> {
       return {
         id: "off-" + p.code,
         name: String(name),
-        brand: p.brands ? (String(p.brands).split(",")[0] ?? null) : null,
+        brand: Array.isArray(p.brands) ? (p.brands[0] ?? null) : p.brands ? (String(p.brands).split(",")[0] ?? null) : null,
         image: p.image_front_small_url || p.image_front_url || null,
         kcal: Math.round(kcal),
         protein: num(n.proteins_100g),
