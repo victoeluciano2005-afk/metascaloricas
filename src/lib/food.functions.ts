@@ -11,23 +11,20 @@ async function fetchOFF(q: string, lang: string): Promise<any[]> {
   const fields =
     "code,product_name,product_name_pt,generic_name,brands,image_front_small_url,image_front_url,nutriments,serving_quantity";
   const headers = { "User-Agent": "NutriTrack/1.0 (contato@nutritrack.app)" };
-  try {
-    const u = new URL("https://search.openfoodfacts.org/search");
-    u.search = new URLSearchParams({ q, page_size: "60", langs: `${lang},en`, fields }).toString();
+  const get = async (u: URL, key: "hits" | "products") => {
     const r = await fetch(u, { headers, signal: AbortSignal.timeout(9000) });
-    if (r.ok) {
-      const d = (await r.json()) as { hits?: any[] };
-      if (d.hits?.length) return d.hits;
-    }
-  } catch { /* fall through */ }
-  const url = new URL("https://world.openfoodfacts.org/cgi/search.pl");
-  url.search = new URLSearchParams({
+    if (!r.ok) throw new Error("OFF " + r.status);
+    return ((await r.json()) as Record<string, any[]>)[key] ?? [];
+  };
+  const u1 = new URL("https://search.openfoodfacts.org/search");
+  u1.search = new URLSearchParams({ q, page_size: "60", langs: `${lang},en`, fields }).toString();
+  const u2 = new URL("https://br.openfoodfacts.org/cgi/search.pl");
+  u2.search = new URLSearchParams({
     search_terms: q, search_simple: "1", action: "process", json: "1", page_size: "60", lc: lang, fields,
   }).toString();
-  const res = await fetch(url, { headers, signal: AbortSignal.timeout(9000) });
-  if (!res.ok) throw new Error("OFF " + res.status);
-  const data = (await res.json()) as { products?: any[] };
-  return data.products ?? [];
+  const rs = await Promise.allSettled([get(u2, "products"), get(u1, "hits")]);
+  if (rs.every((r) => r.status === "rejected")) throw new Error("OFF unavailable");
+  return rs.flatMap((r) => (r.status === "fulfilled" ? r.value : []));
 }
 
 async function searchOFF(q: string, lang: string): Promise<Food[]> {
