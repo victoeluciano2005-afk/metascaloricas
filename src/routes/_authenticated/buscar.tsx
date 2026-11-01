@@ -108,7 +108,7 @@ function BuscarPage() {
   );
 }
 
-function AddDialog({ food, onClose, date, meal }: { food: Food | null; onClose: () => void; date: string; meal?: string }) {
+function AddDialog({ food, onClose, date, meal }: { food: Food | null; onClose: () => void; date: string; meal?: string | undefined }) {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const [qty, setQty] = useState("100");
