@@ -40,7 +40,7 @@ async function searchOFF(q: string, lang: string): Promise<Food[]> {
       return {
         id: "off-" + p.code,
         name: String(name),
-        brand: p.brands ? (String(p.brands).split(",")[0] ?? null) : null,
+        brand: Array.isArray(p.brands) ? (p.brands[0] ?? null) : p.brands ? (String(p.brands).split(",")[0] ?? null) : null,
         image: p.image_front_small_url || p.image_front_url || null,
         kcal: Math.round(kcal),
         protein: num(n.proteins_100g),
