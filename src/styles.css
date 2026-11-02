@@ -155,3 +155,13 @@
     font-family: var(--font-display);
   }
 }
+
+@keyframes food-float {
+  0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
+  25% { transform: translateY(-4px) rotate(-6deg) scale(1.05); }
+  75% { transform: translateY(-2px) rotate(6deg) scale(1.02); }
+}
+@utility animate-food-float {
+  animation: food-float 2.6s ease-in-out infinite;
+  @media (prefers-reduced-motion: reduce) { animation: none; }
+}

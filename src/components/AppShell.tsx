@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { BookOpen, Search, Sparkles, TrendingUp, User } from "lucide-react";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { foodEmoji } from "@/lib/food-emoji";
 
 const TABS = [
   { to: "/diario", label: "Diário", icon: BookOpen },
@@ -59,16 +60,11 @@ export function ErrorState({ message, onRetry }: { message: string; onRetry?: ()
   );
 }
 
-export function FoodImg({ src, alt, className }: { src?: string | null; alt: string; className?: string }) {
+// Animated emoji that represents the food/drink (no product photos).
+export function FoodImg({ alt, className }: { src?: string | null; alt: string; className?: string }) {
   return (
-    <img
-      src={src || "/food-placeholder.svg"}
-      alt={alt}
-      loading="lazy"
-      onError={(e) => {
-        (e.currentTarget as HTMLImageElement).src = "/food-placeholder.svg";
-      }}
-      className={cn("bg-muted object-cover", className)}
-    />
+    <span role="img" aria-label={alt} className={cn("flex items-center justify-center bg-transparent", className)}>
+      <span className="animate-food-float select-none text-[2.4em] leading-none drop-shadow-sm">{foodEmoji(alt)}</span>
+    </span>
   );
 }
