@@ -87,3 +87,23 @@ export async function addFoodLog(row: {
   const { error } = await supabase.from("food_logs").insert(row);
   if (error) throw error;
 }
+
+export const historyQuery = queryOptions({
+  queryKey: ["logs", "history"],
+  queryFn: async () => {
+    const since = format(new Date(Date.now() - 400 * 86400000), "yyyy-MM-dd");
+    const { data, error } = await supabase
+      .from("food_logs")
+      .select("log_date, food_name, quantity_g, calories, protein_g, carbs_g, fat_g, meal")
+      .gte("log_date", since)
+      .order("log_date");
+    if (error) throw error;
+    return data;
+  },
+});
+
+export function dailyTotals(rows: { log_date: string; calories: number | string }[]) {
+  const m = new Map<string, number>();
+  for (const r of rows) m.set(r.log_date, (m.get(r.log_date) ?? 0) + Number(r.calories));
+  return m;
+}
