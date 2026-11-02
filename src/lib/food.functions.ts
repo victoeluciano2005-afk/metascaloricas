@@ -51,36 +51,6 @@ async function searchOFF(q: string, lang: string): Promise<Food[]> {
     .filter((x): x is Food => x !== null);
 }
 
-async function searchUSDA(q: string): Promise<Food[]> {
-  const key = process.env["USDA_API_KEY"] || "DEMO_KEY";
-  const url = new URL("https://api.nal.usda.gov/fdc/v1/foods/search");
-  url.search = new URLSearchParams({
-    api_key: key,
-    query: q,
-    pageSize: "8",
-    dataType: "Foundation,SR Legacy",
-  }).toString();
-  const res = await fetch(url, { signal: AbortSignal.timeout(9000) });
-  if (!res.ok) throw new Error("USDA " + res.status);
-  const data = (await res.json()) as { foods?: any[] };
-  return (data.foods ?? []).map((f) => {
-    const get = (id: number) =>
-      num(f.foodNutrients?.find((x: any) => x.nutrientId === id)?.value);
-    return {
-      id: "usda-" + f.fdcId,
-      name: String(f.description).toLowerCase().replace(/^\w/, (c: string) => c.toUpperCase()),
-      brand: "Alimento genérico (USDA)",
-      image: null,
-      kcal: Math.round(get(1008) || get(2047) || get(2048)),
-      protein: get(1003),
-      carbs: get(1005),
-      fat: get(1004),
-      servingG: null,
-      source: "USDA",
-    } satisfies Food;
-  }).filter((f) => f.kcal > 0);
-}
-
 const norm = (s: string) =>
   s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
