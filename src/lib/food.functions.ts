@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import type { Food } from "./food-types";
+import { searchGeneric } from "./generic-foods";
 
 const num = (v: unknown) => {
   const n = typeof v === "string" ? parseFloat(v) : typeof v === "number" ? v : NaN;
@@ -50,36 +51,6 @@ async function searchOFF(q: string, lang: string): Promise<Food[]> {
     .filter((x): x is Food => x !== null);
 }
 
-async function searchUSDA(q: string): Promise<Food[]> {
-  const key = process.env["USDA_API_KEY"] || "DEMO_KEY";
-  const url = new URL("https://api.nal.usda.gov/fdc/v1/foods/search");
-  url.search = new URLSearchParams({
-    api_key: key,
-    query: q,
-    pageSize: "8",
-    dataType: "Foundation,SR Legacy",
-  }).toString();
-  const res = await fetch(url, { signal: AbortSignal.timeout(9000) });
-  if (!res.ok) throw new Error("USDA " + res.status);
-  const data = (await res.json()) as { foods?: any[] };
-  return (data.foods ?? []).map((f) => {
-    const get = (id: number) =>
-      num(f.foodNutrients?.find((x: any) => x.nutrientId === id)?.value);
-    return {
-      id: "usda-" + f.fdcId,
-      name: String(f.description).toLowerCase().replace(/^\w/, (c: string) => c.toUpperCase()),
-      brand: "Alimento genérico (USDA)",
-      image: null,
-      kcal: Math.round(get(1008) || get(2047) || get(2048)),
-      protein: get(1003),
-      carbs: get(1005),
-      fat: get(1004),
-      servingG: null,
-      source: "USDA",
-    } satisfies Food;
-  }).filter((f) => f.kcal > 0);
-}
-
 const norm = (s: string) =>
   s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
@@ -114,15 +85,31 @@ export function rankByQuery(foods: Food[], q: string): Food[] {
     .slice(0, 30);
 }
 
+// Products: drop brand duplicates (same name = same food) and generic-looking names already covered.
+function dedupeProducts(products: Food[], generic: Food[]): Food[] {
+  const seen = new Set(generic.map((g) => norm(g.name)));
+  const out: Food[] = [];
+  for (const p of products) {
+    const k = norm(p.name).replace(/[^a-z0-9 ]+/g, " ").replace(/\s+/g, " ").trim();
+    // A product called just "Arroz"/"Ovo" adds nothing when a generic item exists.
+    if (generic.length && k.split(" ").length <= 1) continue;
+    if (seen.has(k)) continue;
+    seen.add(k);
+    out.push({ ...p, image: null });
+  }
+  return out.slice(0, 12);
+}
+
 export const searchFoods = createServerFn({ method: "GET" })
   .inputValidator(z.object({ q: z.string().trim().min(2).max(80), lang: z.string().max(5).default("pt") }))
   .handler(async ({ data }) => {
-    const [off, usda] = await Promise.allSettled([searchOFF(data.q, data.lang), searchUSDA(data.q)]);
-    const a = off.status === "fulfilled" ? off.value : [];
-    const b = usda.status === "fulfilled" ? usda.value : [];
-    if (off.status === "rejected" && usda.status === "rejected") {
-      console.error("food search failed", off.reason, usda.reason);
-      throw new Error("Não foi possível buscar alimentos agora. Tente novamente.");
+    const generic = searchGeneric(data.q);
+    let products: Food[] = [];
+    try {
+      products = rankByQuery(await searchOFF(data.q, data.lang), data.q);
+    } catch (e) {
+      console.error("food search failed", e);
+      if (!generic.length) throw new Error("Não foi possível buscar alimentos agora. Tente novamente.");
     }
-    return { foods: rankByQuery([...a, ...b], data.q) };
+    return { generic, products: dedupeProducts(products, generic) };
   });

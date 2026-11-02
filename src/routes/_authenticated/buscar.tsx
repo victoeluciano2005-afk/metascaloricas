@@ -46,7 +46,9 @@ function BuscarPage() {
     enabled: q.length >= 2,
     staleTime: 5 * 60_000,
   });
-  const foods = res.data?.foods ?? [];
+  const generic = res.data?.generic ?? [];
+  const products = res.data?.products ?? [];
+  const total = generic.length + products.length;
 
   return (
     <AppShell
@@ -79,32 +81,44 @@ function BuscarPage() {
         <ErrorState message={(res.error as Error).message || "Erro na busca."} onRetry={() => res.refetch()} />
       ) : res.isLoading ? (
         <div className="space-y-3">{Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-20 rounded-2xl" />)}</div>
-      ) : foods.length === 0 ? (
+      ) : total === 0 ? (
         <p className="py-10 text-center text-muted-foreground">Nenhum alimento encontrado para "{q}".</p>
       ) : (
-        <ul className="space-y-3">
-          {foods.map((f) => (
-            <li key={f.id}>
-              <button onClick={() => setPicked(f)} className="flex w-full items-center gap-3 rounded-2xl bg-card p-3 text-left shadow-card">
-                <FoodImg src={f.image} alt={f.name} className="size-16 shrink-0 rounded-xl" />
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium">{f.name}</p>
-                  {f.brand && <p className="truncate text-xs text-muted-foreground">{f.brand}</p>}
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    P {f.protein.toFixed(1)}g · C {f.carbs.toFixed(1)}g · G {f.fat.toFixed(1)}g
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="font-display font-bold">{f.kcal}</p>
-                  <p className="text-[10px] text-muted-foreground">kcal/100g</p>
-                </div>
-              </button>
-            </li>
-          ))}
-        </ul>
+        <div className="space-y-6">
+          {generic.length > 0 && <FoodList title="Alimentos" foods={generic} onPick={setPicked} />}
+          {products.length > 0 && <FoodList title="Produtos industrializados" foods={products} onPick={setPicked} />}
+        </div>
       )}
       <AddDialog food={picked} onClose={() => setPicked(null)} date={date ?? todayStr()} meal={meal} />
     </AppShell>
+  );
+}
+
+function FoodList({ title, foods, onPick }: { title: string; foods: Food[]; onPick: (f: Food) => void }) {
+  return (
+    <section>
+      <h2 className="mb-2 text-sm font-semibold text-muted-foreground">{title}</h2>
+      <ul className="space-y-3">
+        {foods.map((f) => (
+          <li key={f.id}>
+            <button onClick={() => onPick(f)} className="flex w-full items-center gap-3 rounded-2xl bg-card p-3 text-left shadow-card">
+              <FoodImg alt={f.name} className="size-14 shrink-0" />
+              <div className="min-w-0 flex-1">
+                <p className="font-medium leading-snug">{f.name}</p>
+                {f.brand && <p className="truncate text-xs text-muted-foreground">{f.brand}</p>}
+                <p className="mt-1 text-xs text-muted-foreground">
+                  P {f.protein.toFixed(1)}g · C {f.carbs.toFixed(1)}g · G {f.fat.toFixed(1)}g
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="font-display font-bold">{f.kcal}</p>
+                <p className="text-[10px] text-muted-foreground">kcal/100g</p>
+              </div>
+            </button>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 
@@ -127,7 +141,7 @@ function AddDialog({ food, onClose, date, meal }: { food: Food | null; onClose: 
     setSaving(true);
     try {
       await addFoodLog({
-        food_name: food.name, brand: food.brand, image_url: food.image, quantity_g: g,
+        food_name: food.name, brand: food.brand, image_url: null, quantity_g: g,
         calories: food.kcal * f, protein_g: food.protein * f, carbs_g: food.carbs * f, fat_g: food.fat * f,
         meal: m, log_date: date,
       });
@@ -146,7 +160,7 @@ function AddDialog({ food, onClose, date, meal }: { food: Food | null; onClose: 
         {food && (
           <>
             <DialogHeader><DialogTitle className="text-left">{food.name}</DialogTitle></DialogHeader>
-            <FoodImg src={food.image} alt={food.name} className="h-40 w-full rounded-2xl object-contain" />
+            <FoodImg alt={food.name} className="h-32 w-full text-[2rem]" />
             <div className="grid grid-cols-4 gap-2 text-center">
               {[["kcal", food.kcal * f], ["Prot", food.protein * f], ["Carb", food.carbs * f], ["Gord", food.fat * f]].map(([l, v]) => (
                 <div key={l as string} className="rounded-xl bg-muted p-2">
