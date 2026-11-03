@@ -91,14 +91,15 @@ export async function addFoodLog(row: {
 export const historyQuery = queryOptions({
   queryKey: ["logs", "history"],
   queryFn: async () => {
-    const since = format(new Date(Date.now() - 400 * 86400000), "yyyy-MM-dd");
-    const { data, error } = await supabase
-      .from("food_logs")
-      .select("log_date, food_name, quantity_g, calories, protein_g, carbs_g, fat_g, meal")
-      .gte("log_date", since)
-      .order("log_date");
-    if (error) throw error;
-    return data;
+    const rows = [];
+    for (let offset = 0; ; offset += 1000) {
+      const { data, error } = await supabase.from("food_logs")
+        .select("log_date, food_name, quantity_g, calories, protein_g, carbs_g, fat_g, meal")
+        .order("log_date").order("id").range(offset, offset + 999);
+      if (error) throw error;
+      rows.push(...data);
+      if (data.length < 1000) return rows;
+    }
   },
 });
 
