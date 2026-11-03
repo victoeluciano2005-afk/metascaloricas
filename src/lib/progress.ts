@@ -22,7 +22,7 @@ export function levelFor(completedDays: number) {
 /** Current streak of complete days ending today (or yesterday if today isn't done yet). */
 export function currentStreak(completeDates: Set<string>, today: Date) {
   const d = new Date(today);
-  const key = (x: Date) => x.toISOString().slice(0, 10);
+  const key = (x: Date) => `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`;
   if (!completeDates.has(key(d))) d.setDate(d.getDate() - 1);
   let n = 0;
   while (completeDates.has(key(d))) { n++; d.setDate(d.getDate() - 1); }
@@ -63,5 +63,5 @@ const MSGS: Record<Tone, string[]> = {
 
 export function reminderMessage(tone: Tone, rand: number) {
   const list = MSGS[tone];
-  return list[Math.floor(rand * list.length) % list.length]!;
+  return list[Math.floor(Math.max(0, Math.min(rand, .999999)) * list.length)] ?? list[0] ?? '';
 }
