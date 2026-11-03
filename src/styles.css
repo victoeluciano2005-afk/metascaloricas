@@ -165,3 +165,9 @@
   animation: food-float 2.6s ease-in-out infinite;
   @media (prefers-reduced-motion: reduce) { animation: none; }
 }
+
+@keyframes calendar-enter { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes goal-check { from { transform: scale(.5); } to { transform: scale(1); } }
+.calendar-enter { animation: calendar-enter .3s ease-out; }
+.goal-check { animation: goal-check .4s ease-out; }
+@media (prefers-reduced-motion: reduce) { .calendar-enter, .goal-check { animation: none; } }
