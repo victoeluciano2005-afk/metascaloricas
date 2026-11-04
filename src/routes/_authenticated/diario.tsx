@@ -144,15 +144,12 @@ const VERDICT = {
 
 function DayReview({ items, goal }: { items: Log[]; goal: Tables<"goals"> }) {
   const r = reviewDay(items, { ...goal, objective: goal.objective as Objective });
-  if (!r) {
-    return items.length ? (
-      <p className="mt-6 rounded-2xl bg-muted p-4 text-center text-sm text-muted-foreground">🔒 Complete sua meta de calorias para receber a análise do dia.</p>
-    ) : null;
-  }
+  if (!r) return null;
   const v = VERDICT[r.verdict];
   return (
     <section className={`mt-6 animate-in fade-in slide-in-from-bottom-2 rounded-3xl border p-5 ${v.cls}`}>
       <h3 className="font-display text-lg font-bold">{v.emoji} {v.title}</h3>
+      {r.charge && <p className="mt-2 rounded-2xl bg-destructive/10 p-3 text-sm font-semibold text-destructive">⏰ {r.charge}</p>}
       {r.good.length > 0 && <ul className="mt-2 space-y-1 text-sm">{r.good.map((g) => <li key={g}>👍 {g}</li>)}</ul>}
       {r.tips.length > 0 && (
         <>

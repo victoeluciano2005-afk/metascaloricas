@@ -5,8 +5,14 @@ const goal = { calories: 2000, protein_g: 120, carbs_g: 230, fat_g: 60, objectiv
 const log = (food_name: string, meal: string, calories: number, protein_g: number, carbs_g: number, fat_g: number) => ({ food_name, meal, calories, protein_g, carbs_g, fat_g });
 
 describe("reviewDay", () => {
-  it("returns null when day is not complete (below 90%)", () => {
-    expect(reviewDay([log("Arroz", "lunch", 1000, 20, 200, 5)], goal)).toBeNull();
+  it("returns null when nothing was logged", () => {
+    expect(reviewDay([], goal)).toBeNull();
+  });
+  it("charges the user when the goal is not completed", () => {
+    const r = reviewDay([log("Arroz", "lunch", 1000, 20, 200, 5)], goal);
+    expect(r?.complete).toBe(false);
+    expect(r?.charge).toContain("Faltaram 1000 kcal");
+    expect(r?.verdict).not.toBe("adequada");
   });
   it("rates a balanced complete day as adequada", () => {
     const r = reviewDay([
