@@ -17,6 +17,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { logsQuery, profileQuery, todayStr } from "@/lib/data";
 import { MEALS } from "@/lib/food-types";
 import type { Tables } from "@/integrations/supabase/types";
+import { reviewDay } from "@/lib/day-review";
+import type { Objective } from "@/lib/nutrition";
 
 export const Route = createFileRoute("/_authenticated/diario")({
   validateSearch: z.object({ date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional() }),
@@ -126,10 +128,39 @@ function Diary() {
               );
             })}
           </div>
+          <DayReview items={items} goal={goal} />
         </>
       )}
       <EditDialog log={editing} onClose={() => setEditing(null)} />
     </AppShell>
+  );
+}
+
+const VERDICT = {
+  adequada: { emoji: "✅", title: "Alimentação adequada", cls: "border-primary/40 bg-primary-soft" },
+  ajustar: { emoji: "⚠️", title: "Boa, mas dá para melhorar", cls: "border-carbs/40 bg-muted" },
+  inadequada: { emoji: "🚨", title: "Alimentação inadequada hoje", cls: "border-destructive/40 bg-destructive/5" },
+} as const;
+
+function DayReview({ items, goal }: { items: Log[]; goal: Tables<"goals"> }) {
+  const r = reviewDay(items, { ...goal, objective: goal.objective as Objective });
+  if (!r) {
+    return items.length ? (
+      <p className="mt-6 rounded-2xl bg-muted p-4 text-center text-sm text-muted-foreground">🔒 Complete sua meta de calorias para receber a análise do dia.</p>
+    ) : null;
+  }
+  const v = VERDICT[r.verdict];
+  return (
+    <section className={`mt-6 animate-in fade-in slide-in-from-bottom-2 rounded-3xl border p-5 ${v.cls}`}>
+      <h3 className="font-display text-lg font-bold">{v.emoji} {v.title}</h3>
+      {r.good.length > 0 && <ul className="mt-2 space-y-1 text-sm">{r.good.map((g) => <li key={g}>👍 {g}</li>)}</ul>}
+      {r.tips.length > 0 && (
+        <>
+          <p className="mt-4 text-sm font-semibold">Dicas para amanhã</p>
+          <ul className="mt-1 space-y-2 text-sm">{r.tips.map((t) => <li key={t}>💡 {t}</li>)}</ul>
+        </>
+      )}
+    </section>
   );
 }
 
