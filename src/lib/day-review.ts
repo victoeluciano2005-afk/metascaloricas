@@ -10,13 +10,22 @@ const ULTRA = /(refrigerante|salgadinho|biscoito recheado|bolacha recheada|choco
 const VEG = /(alface|tomate|brócolis|brocolis|cenoura|couve|abobrinha|pepino|salada|espinafre|repolho|beterraba|chuchu|legume|vagem|abóbora|abobora)/i;
 const FRUIT = /(banana|maçã|maca|laranja|mamão|mamao|melancia|abacaxi|manga|uva|morango|pera|goiaba|fruta|açaí|acai|kiwi|melão|melao)/i;
 
-/** Analyses a finished day. Returns null while the day isn't complete. */
+/** Analyses the day's meals. Returns null only when nothing was logged. */
 export function reviewDay(logs: ReviewLog[], goal: ReviewGoal) {
   const t = logs.reduce((a, l) => ({ kcal: a.kcal + +l.calories, p: a.p + +l.protein_g, c: a.c + +l.carbs_g, f: a.f + +l.fat_g }), { kcal: 0, p: 0, c: 0, f: 0 });
-  if (!isDayComplete(t.kcal, goal.calories)) return null;
+  if (!logs.length) return null;
+  const complete = isDayComplete(t.kcal, goal.calories);
   const good: string[] = [];
   const tips: string[] = [];
   let issues = 0;
+  let charge: string | null = null;
+  if (!complete) {
+    issues += 2;
+    const diff = Math.round(Math.abs(goal.calories - t.kcal));
+    charge = t.kcal < goal.calories
+      ? `Faltaram ${diff} kcal para sua meta. Meta pela metade é resultado pela metade. Termine o que começou.`
+      : `Você passou ${diff} kcal da sua meta. Sem controle não existe resultado. Amanhã, mais disciplina.`;
+  } else good.push("Meta de calorias batida.");
   const pct = (v: number, g: number) => (g ? v / g : 1);
 
   const pr = pct(t.p, goal.protein_g);
@@ -43,5 +52,5 @@ export function reviewDay(logs: ReviewLog[], goal: ReviewGoal) {
   if (goal.objective === "lose") tips.push("Para perder peso, priorize volume: mais legumes no prato e água ao longo do dia.");
 
   const verdict: Verdict = issues === 0 ? "adequada" : issues <= 2 ? "ajustar" : "inadequada";
-  return { verdict, good, tips: tips.slice(0, 5), totals: t };
+  return { verdict, good, tips: tips.slice(0, 5), totals: t, complete, charge };
 }
