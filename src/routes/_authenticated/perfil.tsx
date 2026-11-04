@@ -30,8 +30,8 @@ function Perfil() {
   const { data: user } = useQuery({ queryKey: ["auth-user"], queryFn: async () => (await supabase.auth.getUser()).data.user });
   const [editing, setEditing] = useState(false);
   const meta = user?.user_metadata ?? {};
-  const name: string = meta.full_name || meta.name || pd.profile?.full_name || "Você";
-  const photo: string | undefined = meta.avatar_url || meta.picture || pd.profile?.avatar_url || undefined;
+  const name: string = meta["full_name"] || meta["name"] || pd.profile?.full_name || "Você";
+  const photo: string | undefined = meta["avatar_url"] || meta["picture"] || pd.profile?.avatar_url || undefined;
   const goal = pd.goal?.calories ?? 0;
   const summary = progressSummary(rows, goal);
   const level = levelFor(summary.complete.size);
@@ -94,7 +94,7 @@ function Perfil() {
         {editing && p ? (
           <ProfileForm
             initial={{
-              sex: p.sex as Sex, age: p.age ?? undefined, height_cm: Number(p.height_cm) || undefined, weight_kg: Number(p.weight_kg) || undefined,
+              sex: p.sex as Sex, ...(p.age ? { age: p.age } : {}), ...(p.height_cm ? { height_cm: Number(p.height_cm) } : {}), ...(p.weight_kg ? { weight_kg: Number(p.weight_kg) } : {}),
               activity_level: p.activity_level as Activity, country: p.country ?? "BR", objective: pd.goal?.objective as Objective,
             }}
             submitLabel="Salvar alterações"
