@@ -103,6 +103,7 @@ export type Database = {
           full_name: string | null
           height_cm: number | null
           id: string
+          last_opened_at: string | null
           onboarded: boolean
           sex: string | null
           updated_at: string
@@ -118,6 +119,7 @@ export type Database = {
           full_name?: string | null
           height_cm?: number | null
           id: string
+          last_opened_at?: string | null
           onboarded?: boolean
           sex?: string | null
           updated_at?: string
@@ -133,10 +135,38 @@ export type Database = {
           full_name?: string | null
           height_cm?: number | null
           id?: string
+          last_opened_at?: string | null
           onboarded?: boolean
           sex?: string | null
           updated_at?: string
           weight_kg?: number | null
+        }
+        Relationships: []
+      }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          endpoint: string
+          id: string
+          p256dh: string
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          p256dh: string
+          user_id?: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          p256dh?: string
+          user_id?: string
         }
         Relationships: []
       }

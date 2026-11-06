@@ -1,6 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import { BookOpen, Search, Sparkles, TrendingUp, User } from "lucide-react";
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
+import { markOpened } from "@/lib/push";
+
+let opened = false;
 import { cn } from "@/lib/utils";
 import { foodEmoji } from "@/lib/food-emoji";
 
@@ -13,6 +16,7 @@ const TABS = [
 ] as const;
 
 export function AppShell({ children, header }: { children: ReactNode; header?: ReactNode }) {
+  useEffect(() => { if (!opened) { opened = true; markOpened().catch(() => {}); } }, []);
   return (
     <div className="mx-auto min-h-dvh max-w-lg bg-background">
       {header && (

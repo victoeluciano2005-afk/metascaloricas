@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isDayComplete, levelFor, reminderTone } from "./progress";
+import { isDayComplete, levelFor, reminderTone, reminderMessage } from "./progress";
 
 describe("progress rules", () => {
   it("day complete only within 90-110% of goal", () => {
@@ -13,9 +13,10 @@ describe("progress rules", () => {
     expect(levelFor(60).current?.key).toBe("profissional");
     expect(levelFor(365).current?.key).toBe("disciplinado");
   });
-  it("absent users get harsh tone; praise is rare", () => {
-    expect(reminderTone({ daysSinceLastLog: 3, completionRate: 0.9, rand: 0 })).toBe("harsh");
-    expect(reminderTone({ daysSinceLastLog: 0, completionRate: 0.9, rand: 0.5 })).toBe("firm");
-    expect(reminderTone({ daysSinceLastLog: 0, completionRate: 0.9, rand: 0.05 })).toBe("praise");
+  it("absent users get harsh tone; frequent users never praised", () => {
+    expect(reminderTone({ daysSinceLastLog: 3, completionRate: 0.9 })).toBe("harsh");
+    expect(reminderTone({ daysSinceLastLog: 1, completionRate: 0.9 })).toBe("firm");
+    expect(reminderTone({ daysSinceLastLog: 0, completionRate: 0.9 })).toBe("steady");
+    expect(reminderMessage("steady", 0)).toBe("Continue com sua disciplina, sem rodeios.");
   });
 });

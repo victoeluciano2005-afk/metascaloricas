@@ -7,6 +7,7 @@
       "dependencies": {
         "@hookform/resolvers": "^5.2.2",
         "@lovable.dev/cloud-auth-js": "^1.1.2",
+        "@portable/web-push": "^0.1.0",
         "@radix-ui/react-accordion": "^1.2.12",
         "@radix-ui/react-alert-dialog": "^1.1.15",
         "@radix-ui/react-aspect-ratio": "^1.1.8",
@@ -305,6 +306,18 @@
     "@oxc-project/types": ["@oxc-project/types@0.142.0", "", {}, "sha512-7W+2q5AKQVU36fkaryontrHn3YDt1RyUYXatw9i5H8ocYe2sPKSFB6eS8WNPeRKiN1qAWWZUPm7gwFzJGrccqQ=="],
 
     "@pkgr/core": ["@pkgr/core@0.3.6", "", {}, "sha512-SEeaJLb3qBNF/OaXnaR1NmmBbFYk1zC0ZH/52fATcRPLFg/p791YrcyFFy44Bo9sLaGuSuLp5Q6axbb/O+v/RA=="],
+
+    "@portable/base64": ["@portable/base64@0.1.0", "", { "dependencies": { "@portable/bytes": "0.1.0", "@portable/errors": "0.1.0", "@portable/streams": "0.1.0" } }, "sha512-wzqVzZOrLlARDUEEf6pw1oPWiNPTkQlB1JVHcta+LKCR2L9Zhq9Sy1+OWCWWqAei4ADNvT4vrgonx2iGcxYHvA=="],
+
+    "@portable/bytes": ["@portable/bytes@0.1.0", "", { "dependencies": { "@portable/errors": "0.1.0" } }, "sha512-qV6a+6i6C1o5RCVJkccFmEbFPotlX2KgakvJhJdG3N2hN65zSmVBTi0pqVhLW6KowRT/S/xgbQCflxG+pSj35g=="],
+
+    "@portable/errors": ["@portable/errors@0.1.0", "", {}, "sha512-IWdOpXVmssV3ocD09KHuZajnTl1DnYurzAurKCzSs9FPcPXNpWGnn1PlAubEJsyU/SJYivluRY4HAkoA58ofEg=="],
+
+    "@portable/streams": ["@portable/streams@0.1.0", "", { "dependencies": { "@portable/bytes": "0.1.0", "@portable/errors": "0.1.0" } }, "sha512-WQTEEtccsNnvDKN4/n7wav4vMDe75MPIlgKdEF1YsgywXkgNomgFe4nVZFfe+r8dPD4uGLpelWLzZC2wyTpEyg=="],
+
+    "@portable/timers": ["@portable/timers@0.1.0", "", { "dependencies": { "@portable/errors": "0.1.0" } }, "sha512-YxkJ5wE7FdNCzwPp0eS0NmjQqzQWNcb6e5NSC3no26Bb5suHngA8IZo7NXtf7rerL68OJLWoaCi49Ksr3T+/vw=="],
+
+    "@portable/web-push": ["@portable/web-push@0.1.0", "", { "dependencies": { "@portable/base64": "0.1.0", "@portable/bytes": "0.1.0", "@portable/errors": "0.1.0", "@portable/timers": "0.1.0" } }, "sha512-znGmNXXQFB19G0SQu4VHW2l43XQ+Rd25Xyf1yG4CXL6OH4J1cQ6LzbaBoO3SL9vTkOfW0kZoB7M4+vgPWKBmig=="],
 
     "@radix-ui/number": ["@radix-ui/number@1.1.3", "", {}, "sha512-Road2bidD0uu/1BGDOWNdPI06g0lIRy6IF9GZcIrDK2KGItfor8IQwQa+yM2ERgHM1MmHxaxpTzk0/Jp42lNfA=="],
 
