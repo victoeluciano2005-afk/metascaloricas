@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { disablePush, enablePush, pushStatus } from "@/lib/push";
 import { toast } from "sonner";
-import { LogOut, Pencil } from "lucide-react";
+import { Bell, BellOff, LogOut, Pencil } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { ProfileForm } from "@/components/ProfileForm";
 import { Button } from "@/components/ui/button";
@@ -110,7 +111,41 @@ function Perfil() {
         )}
       </section>
 
+      <Reminders />
+
       <Button variant="outline" className="mt-6 w-full rounded-full" onClick={() => supabase.auth.signOut()}><LogOut />Sair</Button>
     </AppShell>
+  );
+}
+
+const PUSH_MSG = {
+  "open-in-new-tab": "Abra o app em uma aba própria (ou o app instalado) para ativar os lembretes.",
+  denied: "Notificações bloqueadas. Libere nas configurações do navegador para este site.",
+  "ios-install": "No iPhone, toque em Compartilhar → Adicionar à Tela de Início e ative pelo app instalado.",
+  unsupported: "Este navegador não suporta notificações.",
+  error: "Não foi possível ativar os lembretes. Tente novamente.",
+} as const;
+
+function Reminders() {
+  const [status, setStatus] = useState<"on" | "off" | "unsupported" | "loading">("loading");
+  useEffect(() => { pushStatus().then(setStatus).catch(() => setStatus("off")); }, []);
+  const toggle = async () => {
+    if (status === "on") { await disablePush(); setStatus("off"); toast.success("Lembretes desativados."); return; }
+    const r = await enablePush();
+    if (r === "registered") { setStatus("on"); toast.success("Lembretes ativados. Sem desculpas a partir de agora."); }
+    else toast.error(PUSH_MSG[r]);
+  };
+  return (
+    <section className="mt-6 rounded-2xl border bg-card p-4">
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <h3 className="font-semibold">Lembretes de cobrança</h3>
+          <p className="text-xs text-muted-foreground">Ao meio-dia e às 20h. Quanto mais tempo longe do app, mais dura a cobrança.</p>
+        </div>
+        <Button size="sm" className="rounded-full" variant={status === "on" ? "outline" : "default"} disabled={status === "loading"} onClick={toggle}>
+          {status === "on" ? <><BellOff />Desativar</> : <><Bell />Ativar</>}
+        </Button>
+      </div>
+    </section>
   );
 }
