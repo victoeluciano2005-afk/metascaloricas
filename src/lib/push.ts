@@ -34,7 +34,7 @@ export async function enablePush(): Promise<PushResult> {
       (await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: keyBytes(VAPID_PUBLIC_KEY) }));
     const j = sub.toJSON();
     const { error } = await supabase.from("push_subscriptions").upsert(
-      { endpoint: sub.endpoint, p256dh: j.keys!.p256dh!, auth: j.keys!.auth! },
+      { endpoint: sub.endpoint, p256dh: j.keys!['p256dh']!, auth: j.keys!['auth']! },
       { onConflict: "endpoint" },
     );
     if (error) throw error;

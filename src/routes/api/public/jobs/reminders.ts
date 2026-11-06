@@ -11,7 +11,7 @@ export const Route = createFileRoute("/api/public/jobs/reminders")({
       POST: async ({ request }) => {
         const authFailure = await authenticateCronRequest(request);
         if (authFailure) return authFailure;
-        const privateKey = process.env.VAPID_PRIVATE_KEY;
+        const privateKey = process.env['VAPID_PRIVATE_KEY'];
         if (!privateKey) return new Response("Missing VAPID key", { status: 500 });
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
