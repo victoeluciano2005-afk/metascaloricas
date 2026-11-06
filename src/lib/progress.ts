@@ -29,17 +29,18 @@ export function currentStreak(completeDates: Set<string>, today: Date) {
   return n;
 }
 
-export type Tone = "harsh" | "firm" | "praise";
+export type Tone = "harsh" | "firm" | "steady";
 
 /**
- * Engagement-based tone. Low usage -> harsh. Consistent users still get charged;
- * praise only rarely (rand < 0.1) and only when the user is consistent.
+ * Engagement-based tone, never praise.
+ * Away 2+ days or low completion -> harsh. Away 1 day -> firm.
+ * Frequent users -> steady ("continue, sem rodeios"), no comfort zone.
  */
-export function reminderTone(opts: { daysSinceLastLog: number; completionRate: number; rand: number }): Tone {
-  const { daysSinceLastLog, completionRate, rand } = opts;
+export function reminderTone(opts: { daysSinceLastLog: number; completionRate: number; rand?: number }): Tone {
+  const { daysSinceLastLog, completionRate } = opts;
   if (daysSinceLastLog >= 2 || completionRate < 0.3) return "harsh";
-  if (completionRate >= 0.7 && rand < 0.1) return "praise";
-  return "firm";
+  if (daysSinceLastLog >= 1 || completionRate < 0.6) return "firm";
+  return "steady";
 }
 
 const MSGS: Record<Tone, string[]> = {
@@ -52,12 +53,14 @@ const MSGS: Record<Tone, string[]> = {
   firm: [
     "Ainda não registrou suas refeições de hoje. Não deixe pra depois.",
     "Meta batida ontem não conta hoje. Registre o que comeu.",
+    "Um dia fora já é um passo atrás. Abra o diário agora.",
     "Consistência é tudo. Cadê o registro de hoje?",
-    "Bom não é suficiente. Feche a meta de hoje.",
   ],
-  praise: [
-    "Você está mandando bem. Agora não relaxe: feche a meta de hoje também.",
-    "Disciplina de verdade. Continue assim — amanhã tem mais.",
+  steady: [
+    "Continue com sua disciplina, sem rodeios.",
+    "Nada de relaxar. Registre hoje como fez ontem.",
+    "Constância não é opcional. Feche a meta de hoje.",
+    "Você sabe o caminho. Faça o seu trabalho e registre.",
   ],
 };
 
