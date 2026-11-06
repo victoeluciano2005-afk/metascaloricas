@@ -120,7 +120,7 @@ function Perfil() {
 
 const PUSH_MSG = {
   "open-in-new-tab": "Abra o app em uma aba própria (ou o app instalado) para ativar os lembretes.",
-  denied: "Notificações bloqueadas. Libere nas configurações do navegador para este site.",
+  denied: "Notificações bloqueadas. Abra Configurações do celular → Apps → NutriTrack (ou Chrome) → Notificações e permita.",
   "ios-install": "No iPhone, toque em Compartilhar → Adicionar à Tela de Início e ative pelo app instalado.",
   unsupported: "Este navegador não suporta notificações.",
   error: "Não foi possível ativar os lembretes. Tente novamente.",

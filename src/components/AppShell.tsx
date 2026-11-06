@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { BookOpen, Search, Sparkles, TrendingUp, User } from "lucide-react";
 import { useEffect, type ReactNode } from "react";
 import { markOpened } from "@/lib/push";
+import { NotificationPrompt } from "@/components/NotificationPrompt";
 
 let opened = false;
 import { cn } from "@/lib/utils";
@@ -24,7 +25,7 @@ export function AppShell({ children, header }: { children: ReactNode; header?: R
           {header}
         </div>
       )}
-      <main className="px-4 pt-4 pb-28">{children}</main>
+      <main className="px-4 pt-4 pb-28"><NotificationPrompt />{children}</main>
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t bg-card/95 backdrop-blur pb-safe">
         <ul className="mx-auto grid max-w-lg grid-cols-5">
           {TABS.map(({ to, label, icon: Icon }) => (
