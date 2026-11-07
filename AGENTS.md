@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Keep home-screen installation manifest-only, preserve its existing `/diario` identity and start URL, and share installation controls across login and profile; notification workers are separate and must not cache the app shell.

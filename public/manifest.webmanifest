@@ -2,6 +2,8 @@
   "name": "NutriTrack",
   "short_name": "NutriTrack",
   "description": "Contador de calorias e diário alimentar",
+  "id": "/diario",
+  "scope": "/",
   "start_url": "/diario",
   "display": "standalone",
   "background_color": "#f6faf6",
