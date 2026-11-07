@@ -5,6 +5,7 @@ import { disablePush, enablePush, pushStatus } from "@/lib/push";
 import { toast } from "sonner";
 import { Bell, BellOff, LogOut, Pencil } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
+import { InstallApp } from "@/components/InstallApp";
 import { ProfileForm } from "@/components/ProfileForm";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -112,6 +113,7 @@ function Perfil() {
       </section>
 
       <Reminders />
+      <InstallApp />
 
       <Button variant="outline" className="mt-6 w-full rounded-full" onClick={() => supabase.auth.signOut()}><LogOut />Sair</Button>
     </AppShell>

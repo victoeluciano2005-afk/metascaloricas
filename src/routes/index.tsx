@@ -6,6 +6,7 @@ import { lovable } from "@/integrations/lovable/index";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import hero from "@/assets/hero-food.jpg";
+import { InstallApp } from "@/components/InstallApp";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -76,6 +77,7 @@ function Login() {
               Entrar com Google
             </Button>
             <p className="mt-4 text-center text-xs text-muted-foreground">Seus dados ficam protegidos e só você tem acesso.</p>
+            <InstallApp />
           </div>
         </div>
       </div>
