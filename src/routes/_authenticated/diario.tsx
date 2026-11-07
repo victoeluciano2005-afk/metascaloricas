@@ -18,6 +18,7 @@ import { logsQuery, profileQuery, todayStr } from "@/lib/data";
 import { MEALS } from "@/lib/food-types";
 import type { Tables } from "@/integrations/supabase/types";
 import { reviewDay } from "@/lib/day-review";
+import { formatQty, qtyUnit } from "@/lib/units";
 import type { Objective } from "@/lib/nutrition";
 
 export const Route = createFileRoute("/_authenticated/diario")({
@@ -116,7 +117,7 @@ function Diary() {
                           <FoodImg src={i.image_url} alt={i.food_name} className="size-12 shrink-0 rounded-xl" />
                           <div className="min-w-0 flex-1">
                             <p className="truncate text-sm font-medium">{i.food_name}</p>
-                            <p className="text-xs text-muted-foreground">{Math.round(Number(i.quantity_g))} g · {Math.round(Number(i.calories))} kcal</p>
+                            <p className="text-xs text-muted-foreground">{formatQty(Number(i.quantity_g), i.food_name)} · {Math.round(Number(i.calories))} kcal</p>
                           </div>
                           <Button variant="ghost" size="icon" onClick={() => setEditing(i)} aria-label="Editar"><Pencil className="size-4" /></Button>
                           <Button variant="ghost" size="icon" onClick={() => remove(i.id)} aria-label="Remover"><Trash2 className="size-4 text-destructive" /></Button>
@@ -194,7 +195,7 @@ function EditDialog({ log, onClose }: { log: Log | null; onClose: () => void }) 
       <DialogContent className="rounded-3xl">
         <DialogHeader><DialogTitle>{log?.food_name}</DialogTitle></DialogHeader>
         <div className="space-y-3">
-          <label className="block text-sm font-medium">Quantidade (g)
+          <label className="block text-sm font-medium">Quantidade ({log ? qtyUnit(log.food_name) : "g"})
             <Input className="mt-1.5" inputMode="decimal" defaultValue={log ? String(Math.round(Number(log.quantity_g))) : ""} onChange={(e) => setQty(e.target.value.replace(",", "."))} />
           </label>
           <Select defaultValue={log?.meal ?? "snack"} onValueChange={setMeal}>
