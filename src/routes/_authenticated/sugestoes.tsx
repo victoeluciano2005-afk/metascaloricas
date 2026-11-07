@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { historyQuery, profileQuery, logsQuery, todayStr } from '@/lib/data';
 import { MEALS, type MealKey } from '@/lib/food-types';
 import { buildPlate, type Plate } from '@/lib/personalized-plates';
+import { formatQty } from '@/lib/units';
 import { pageHead } from '@/lib/page-head';
 
 export const Route = createFileRoute("/_authenticated/sugestoes")({
@@ -47,7 +48,7 @@ function Suggestions() {
     {plate ? <section>
       <div className="flex items-center justify-between"><h2 className="font-semibold">{plate.familiar ? 'Com seus favoritos' : 'Uma combinação para hoje'}</h2><Button variant="ghost" size="icon" onClick={() => setVariation(v => v+1)} aria-label="Variar prato" title="Variar prato"><RefreshCw /></Button></div>
       <div className="plate-scene mx-auto my-6 grid aspect-square w-full max-w-64 grid-cols-2 place-items-center rounded-full border-[12px] border-card bg-muted shadow-card">{plate.items.map(i => <FoodImg key={i.name} alt={i.name} className="size-16 text-lg" />)}</div>
-      <ul className="divide-y">{plate.items.map(i => <li key={i.name} className="flex items-center gap-3 py-3"><FoodImg alt={i.name} className="size-10 shrink-0" /><span className="min-w-0 flex-1 text-sm font-medium">{i.name}</span><span className="shrink-0 text-sm text-muted-foreground">{i.grams} g</span></li>)}</ul>
+      <ul className="divide-y">{plate.items.map(i => <li key={i.name} className="flex items-center gap-3 py-3"><FoodImg alt={i.name} className="size-10 shrink-0" /><span className="min-w-0 flex-1 text-sm font-medium">{i.name}</span><span className="shrink-0 text-sm text-muted-foreground">{formatQty(i.grams, i.name)}</span></li>)}</ul>
       <div className="my-5 border-y py-4"><p className="text-2xl font-bold">{Math.round(plate.calories)} <span className="text-sm font-normal text-muted-foreground">kcal por prato</span></p><p className="mt-2 text-sm text-muted-foreground">P {Math.round(plate.protein)} g · C {Math.round(plate.carbs)} g · G {Math.round(plate.fat)} g</p></div>
       <Button className="h-12 w-full" disabled={saving} onClick={() => add(plate)}><Plus />{saving ? 'Adicionando…' : 'Adicionar prato ao diário'}</Button>
       <p className="mt-3 text-xs text-muted-foreground">Valores nutricionais estimados.</p>
