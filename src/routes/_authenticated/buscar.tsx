@@ -113,7 +113,7 @@ function FoodList({ title, foods, onPick }: { title: string; foods: Food[]; onPi
               </div>
               <div className="text-right">
                 <p className="font-display font-bold">{f.kcal}</p>
-                <p className="text-[10px] text-muted-foreground">kcal/100g</p>
+                <p className="text-[10px] text-muted-foreground">kcal/100{qtyUnit(f.name)}</p>
               </div>
             </button>
           </li>
