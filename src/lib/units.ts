@@ -6,7 +6,7 @@ const DRINK_WORDS = [
   "chimarrao", "vitamina", "shake", "achocolatado", "refresco", "coco",
 ];
 
-const norm = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+const norm = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
 /** True when the name is a drink/liquid (measured in mL, not g). */
 export function isDrink(name: string): boolean {
