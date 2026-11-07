@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { searchFoods } from "@/lib/food.functions";
 import { addFoodLog, todayStr } from "@/lib/data";
 import { MEALS, type Food } from "@/lib/food-types";
+import { qtyUnit } from "@/lib/units";
 
 export const Route = createFileRoute("/_authenticated/buscar")({
   validateSearch: z.object({ date: z.string().optional(), meal: z.string().optional() }),
@@ -169,7 +170,7 @@ function AddDialog({ food, onClose, date, meal }: { food: Food | null; onClose: 
                 </div>
               ))}
             </div>
-            <label className="block text-sm font-medium">Quantidade (g)
+            <label className="block text-sm font-medium">Quantidade ({qtyUnit(food.name)})
               <Input className="mt-1.5" inputMode="decimal" value={qty} onChange={(e) => setQty(e.target.value)} />
             </label>
             <Select value={m} onValueChange={setM}>
