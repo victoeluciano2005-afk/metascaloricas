@@ -16,6 +16,7 @@ import { MEALS, type Food } from "@/lib/food-types";
 import { qtyUnit } from "@/lib/units";
 
 export const Route = createFileRoute("/_authenticated/buscar")({
+  staticData: { sitemap: false },
   validateSearch: z.object({ date: z.string().optional(), meal: z.string().optional() }),
   head: () => ({
     meta: [

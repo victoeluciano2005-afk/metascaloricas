@@ -22,6 +22,7 @@ import { formatQty, qtyUnit } from "@/lib/units";
 import type { Objective } from "@/lib/nutrition";
 
 export const Route = createFileRoute("/_authenticated/diario")({
+  staticData: { sitemap: false },
   validateSearch: z.object({ date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional() }),
   head: () => ({
     meta: [

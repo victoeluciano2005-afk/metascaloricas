@@ -18,6 +18,7 @@ import type { Activity, Objective, Sex } from "@/lib/nutrition";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/perfil")({
+  staticData: { sitemap: false },
   head: () => pageHead("Seu perfil — NutriTrack", "Sua conta, categorias semanais, mensais e anuais e níveis conquistados."),
   loader: async ({ context }) => {
     await Promise.all([context.queryClient.ensureQueryData(historyQuery), context.queryClient.ensureQueryData(profileQuery)]);

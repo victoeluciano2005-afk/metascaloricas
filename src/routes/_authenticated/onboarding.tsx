@@ -7,6 +7,7 @@ import { saveProfileAndGoals } from "@/lib/data";
 import { detectCountry } from "@/lib/countries";
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Configurar perfil — NutriTrack" },

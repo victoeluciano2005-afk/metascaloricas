@@ -75,6 +75,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
+      { name: "google-site-verification", content: "hlNFSw0dcgE_bM2iHS9pc2waF4McMu6g7rQ-w7JEVlU" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { title: "NutriTrack — Contador de calorias" },
       { name: "description", content: "Conte calorias, acompanhe macros e receba sugestões de refeições do seu país." },
@@ -101,6 +102,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
     ],
   }),
+  staticData: { sitemap: false },
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,

@@ -9,6 +9,7 @@ import hero from "@/assets/hero-food.jpg";
 import { InstallApp } from "@/components/InstallApp";
 
 export const Route = createFileRoute("/")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "NutriTrack — Entre e comece a contar calorias" },
