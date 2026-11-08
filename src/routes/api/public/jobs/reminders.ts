@@ -6,6 +6,7 @@ const VAPID_PUBLIC_KEY = "BEkC-Nj0necomqcRjFuUXn7fjLAllIOi68pdNCijyj8z_vwBMcjcL6
 const DAY = 86400000;
 
 export const Route = createFileRoute("/api/public/jobs/reminders")({
+  staticData: { sitemap: false },
   server: {
     handlers: {
       POST: async ({ request }) => {

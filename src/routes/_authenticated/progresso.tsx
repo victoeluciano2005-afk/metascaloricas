@@ -13,6 +13,7 @@ import { pageHead } from '@/lib/page-head';
 import { cn } from '@/lib/utils';
 
 export const Route = createFileRoute("/_authenticated/progresso")({
+  staticData: { sitemap: false },
   head: () => pageHead('Seu progresso — NutriTrack', 'Calendário de metas calóricas concluídas, sequência e níveis conquistados.'),
   loader: async ({context}) => {await Promise.all([context.queryClient.ensureQueryData(historyQuery),context.queryClient.ensureQueryData(profileQuery)]);},
   component: Progress,

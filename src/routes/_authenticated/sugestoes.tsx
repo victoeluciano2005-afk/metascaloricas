@@ -13,6 +13,7 @@ import { formatQty } from '@/lib/units';
 import { pageHead } from '@/lib/page-head';
 
 export const Route = createFileRoute("/_authenticated/sugestoes")({
+  staticData: { sitemap: false },
   head: () => pageHead('Sugestões para você — NutriTrack', 'Pratos personalizados com seus alimentos habituais e sua meta calórica.'),
   loader: async ({context}) => { await Promise.all([context.queryClient.ensureQueryData(historyQuery), context.queryClient.ensureQueryData(profileQuery), context.queryClient.ensureQueryData(logsQuery(todayStr()))]); },
   component: Suggestions,
